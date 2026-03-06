@@ -1,11 +1,11 @@
-# pa-ujs-document-parser
+# pa-record-retriever
 
 A Python library for fetching and parsing public court records from the [Pennsylvania Unified Judicial System (UJS) portal](https://ujsportal.pacourts.us). It provides structured, typed data for case filings and court summary documents across Common Pleas, Municipal Court, and Magisterial District courts.
 
 ## Installation
 
 ```bash
-pip install git+https://github.com/Free-Our-Vote/pa-ujs-document-parser.git
+pip install git+https://github.com/Free-Our-Vote/pa-record-retriever.git
 ```
 
 ## Overview
@@ -24,16 +24,16 @@ Both are Pydantic models. All fields are validated and typed on the way in, and 
 Search by docket number to retrieve all filings associated with a case:
 
 ```python
-from pa_ujs_document_parser import CaseFiling
+from pa_record_retriever import CaseFiling
 
-filings = CaseFiling.from_related_docket_number("CP-51-CR-0001234-2020")
+filing = CaseFiling.from_docket_number("CP-51-CR-0001234-2020")
 ```
 
 Or search by defendant name (optionally narrowed by date of birth):
 
 ```python
 from datetime import date
-from pa_ujs_document_parser import CaseFiling
+from pa_record_retriever import CaseFiling
 
 filings = CaseFiling.from_defendant(
     first_name="Allen",
@@ -63,7 +63,7 @@ Each result is a `CaseFiling` with the following key fields:
 A court summary aggregates all criminal history for a defendant across all associated cases. Fetch one directly by docket number:
 
 ```python
-from pa_ujs_document_parser import CourtSummary
+from pa_record_retriever import CourtSummary
 
 summary = CourtSummary.from_related_docket_number("CP-51-CR-0001234-2020")
 ```
@@ -168,8 +168,8 @@ The following exceptions may be raised by the public API:
 | `httpx.HTTPStatusError`   | The UJS portal returned an unsuccessful HTTP status code                         |
 
 ```python
-from pa_ujs_document_parser import CourtSummary
-from pa_ujs_document_parser.court_summaries import SealedCaseError, NoFilingsFoundError
+from pa_record_retriever import CourtSummary
+from pa_record_retriever.court_summaries import SealedCaseError, NoFilingsFoundError
 
 try:
     summary = CourtSummary.from_related_docket_number("CP-51-CR-0001234-2020")

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from parsimonious.grammar import Grammar as ParsimoniousGrammar
 
-from pa_ujs_document_parser.pypdf.enum import DelimiterGlyph, FontWeight
+from pa_record_retriever.pypdf.enum import DelimiterGlyph, FontWeight
 
 _BASE_RULES = f"""
 # Attributes

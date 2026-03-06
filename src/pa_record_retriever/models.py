@@ -3,8 +3,8 @@ from enum import StrEnum
 
 from pydantic import AliasChoices, Field
 
-from pa_ujs_document_parser.pydantic import BaseModel
-from pa_ujs_document_parser.requests import RequestHeaders
+from pa_record_retriever.pydantic import BaseModel
+from pa_record_retriever.requests import RequestHeaders
 
 
 class Constant:

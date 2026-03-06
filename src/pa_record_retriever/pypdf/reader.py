@@ -5,8 +5,8 @@ from typing import Any
 from numpy import matmul
 from pypdf import PageObject, PdfReader
 
-from pa_ujs_document_parser.pypdf.enum import DelimiterGlyph, Operator
-from pa_ujs_document_parser.pypdf.models import BoundingBox, Font, TextObject
+from pa_record_retriever.pypdf.enum import DelimiterGlyph, Operator
+from pa_record_retriever.pypdf.models import BoundingBox, Font, TextObject
 
 
 class Page(PageObject):

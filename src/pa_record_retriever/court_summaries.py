@@ -11,12 +11,12 @@ from typing import ClassVar
 
 import httpx
 from loguru import logger
-from pydantic import Field, model_validator
+from pydantic import AliasChoices, Field, model_validator
 from pypdf import PdfReader
 from pypdf.errors import EmptyFileError, PdfReadError
 
-from pa_ujs_document_parser.case_filings import CaseFiling
-from pa_ujs_document_parser.models import (
+from pa_record_retriever.case_filings import CaseFiling
+from pa_record_retriever.models import (
     CaseStatusMixin,
     CaseTypeMixin,
     Constant,
@@ -28,11 +28,11 @@ from pa_ujs_document_parser.models import (
     DocketType,
     OtnMixin,
 )
-from pa_ujs_document_parser.parsimonious.grammar import Grammar
-from pa_ujs_document_parser.parsimonious.models import ParsedDocument
-from pa_ujs_document_parser.pydantic import BaseModel
-from pa_ujs_document_parser.pypdf.enum import DelimiterGlyph, FontWeight
-from pa_ujs_document_parser.requests import InvalidResponseError, retry_x3
+from pa_record_retriever.parsimonious.grammar import Grammar
+from pa_record_retriever.parsimonious.models import ParsedDocument
+from pa_record_retriever.pydantic import BaseModel
+from pa_record_retriever.pypdf.enum import DelimiterGlyph, FontWeight
+from pa_record_retriever.requests import InvalidResponseError, retry_x3
 
 
 class SealedCaseError(Exception):
@@ -72,7 +72,7 @@ class Sentence(BaseModel):
     sentence_date: datetime.date
     """The date of the sentence."""
 
-    sentence_type: str = Field(validation_alias="program_type")
+    sentence_type: str = Field(validation_alias=AliasChoices("program_type", "sentence_type"))
     """The type of sentence (e.g., probation, incarceration)."""
 
     program_period: str | None = None
@@ -692,11 +692,11 @@ class CourtSummary(ParsedDocument):
             InvalidResponseError: If the fetched content is not a valid court summary PDF.
 
         """
-        case_filings = CaseFiling.from_related_docket_number(docket_number)
-        if not case_filings:
+        case_filing = CaseFiling.from_docket_number(docket_number)
+        if case_filing is None:
             raise NoFilingsFoundError(docket_number)
 
-        query_string = case_filings[0].court_summary_url
+        query_string = case_filing.court_summary_url
         if not query_string:
             raise NoCourtSummaryUrlError(docket_number)
 

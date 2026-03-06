@@ -8,11 +8,11 @@ from typing import ClassVar
 
 from pypdf import PdfReader
 
-from pa_ujs_document_parser import __name__ as __package_name__
-from pa_ujs_document_parser.parsimonious.grammar import Grammar
-from pa_ujs_document_parser.parsimonious.nodes import NodeVisitor
-from pa_ujs_document_parser.pydantic import BaseModel
-from pa_ujs_document_parser.pypdf.reader import Page
+from pa_record_retriever import __name__ as __package_name__
+from pa_record_retriever.parsimonious.grammar import Grammar
+from pa_record_retriever.parsimonious.nodes import NodeVisitor
+from pa_record_retriever.pydantic import BaseModel
+from pa_record_retriever.pypdf.reader import Page
 
 
 class ParsedDocument(BaseModel, ABC):

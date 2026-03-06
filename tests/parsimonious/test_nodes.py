@@ -8,9 +8,9 @@ import pytest
 from parsimonious.grammar import Grammar as ParsimoniousGrammar
 from parsimonious.nodes import Node
 
-from pa_ujs_document_parser.parsimonious.nodes import BaseModelNotFoundError, NodeVisitor
-from pa_ujs_document_parser.pydantic import BaseModel
-from pa_ujs_document_parser.pypdf.enum import DelimiterGlyph
+from pa_record_retriever.parsimonious.nodes import BaseModelNotFoundError, NodeVisitor
+from pa_record_retriever.pydantic import BaseModel
+from pa_record_retriever.pypdf.enum import DelimiterGlyph
 
 
 class _SampleStrEnum(StrEnum):

@@ -11,8 +11,8 @@ from parsimonious.nodes import Node
 from parsimonious.nodes import NodeVisitor as ParsimoniousNodeVisitor
 from pydantic import AliasChoices
 
-from pa_ujs_document_parser.pydantic import BaseModel
-from pa_ujs_document_parser.pypdf.enum import DelimiterGlyph
+from pa_record_retriever.pydantic import BaseModel
+from pa_record_retriever.pypdf.enum import DelimiterGlyph
 
 
 class BaseModelNotFoundError(Exception):

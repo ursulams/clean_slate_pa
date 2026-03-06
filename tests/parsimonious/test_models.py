@@ -5,9 +5,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from pa_ujs_document_parser.parsimonious.grammar import Grammar
-from pa_ujs_document_parser.parsimonious.models import ParsedDocument
-from pa_ujs_document_parser.parsimonious.nodes import NodeVisitor
+from pa_record_retriever.parsimonious.grammar import Grammar
+from pa_record_retriever.parsimonious.models import ParsedDocument
+from pa_record_retriever.parsimonious.nodes import NodeVisitor
 
 
 class _SimpleDoc(ParsedDocument):
