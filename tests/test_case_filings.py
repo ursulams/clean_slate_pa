@@ -21,10 +21,6 @@ from pa_record_retriever.models import (
 )
 from pa_record_retriever.requests import ContentType, InvalidPageContentError
 
-# ---------------------------------------------------------------------------
-# HTML fixtures
-# ---------------------------------------------------------------------------
-
 _TABLE_ID = Constant.CASE_SEARCH_RESULTS_TABLE_ID
 
 _HEADERS = [
@@ -84,11 +80,6 @@ _NO_RESULTS_TABLE_HTML = _build_table_html("", no_results=True)
 _MISSING_TABLE_HTML = "<html><body><p>Nothing here.</p></body></html>"
 
 
-# ---------------------------------------------------------------------------
-# EmptyFieldError
-# ---------------------------------------------------------------------------
-
-
 class TestEmptyFieldError:
     """Tests for the ``EmptyFieldError`` exception class."""
 
@@ -107,11 +98,6 @@ class TestEmptyFieldError:
         assert str(err) == "'last_name' must not be empty."
 
 
-# ---------------------------------------------------------------------------
-# DnhMissingError
-# ---------------------------------------------------------------------------
-
-
 class TestDnhMissingError:
     """Tests for the ``DnhMissingError`` exception class."""
 
@@ -128,11 +114,6 @@ class TestDnhMissingError:
         """The ``message`` attribute stores the same text as ``str(err)``."""
         err = DnhMissingError()
         assert err.message in str(err)
-
-
-# ---------------------------------------------------------------------------
-# CaseSearchRequestHeaders
-# ---------------------------------------------------------------------------
 
 
 class TestCaseSearchRequestHeaders:
@@ -155,10 +136,6 @@ class TestCaseSearchRequestHeaders:
         assert headers.cookie
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
 _REQUIRED_CASE_FIELDS: dict[str, Any] = {
     "DocketNumber": "CP-51-CR-0001234-2020",
     "FilingDate": datetime.date(2020, 1, 15),
@@ -174,11 +151,6 @@ _REQUIRED_CASE_FIELDS: dict[str, Any] = {
 def _make_filing(**overrides: Any) -> CaseFiling:
     """Returns a minimally valid ``CaseFiling``, with fields overridden as specified."""
     return CaseFiling(**{**_REQUIRED_CASE_FIELDS, **overrides})
-
-
-# ---------------------------------------------------------------------------
-# CaseFiling model validators
-# ---------------------------------------------------------------------------
 
 
 class TestCaseFilingParseDateFromString:
@@ -235,11 +207,6 @@ class TestCaseFilingValidateDnhParam:
             _make_filing(court_summary_url="/Report/CpCourtSummary?docketNumber=CP-51-CR-0001234-2020")
 
 
-# ---------------------------------------------------------------------------
-# CaseFiling._has_records
-# ---------------------------------------------------------------------------
-
-
 class TestHasRecords:
     """Tests for ``CaseFiling._has_records``."""
 
@@ -258,11 +225,6 @@ class TestHasRecords:
         page = JustHTML(_MISSING_TABLE_HTML, sanitize=False)
         with pytest.raises(InvalidPageContentError):
             CaseFiling._has_records(page)
-
-
-# ---------------------------------------------------------------------------
-# CaseFiling._get_table_headers
-# ---------------------------------------------------------------------------
 
 
 class TestGetTableHeaders:
@@ -294,11 +256,6 @@ class TestGetTableHeaders:
         headers = CaseFiling._get_table_headers(table)
         # The fixture has two extra ths without the attribute (for URL columns)
         assert len(headers) == len(_HEADERS)
-
-
-# ---------------------------------------------------------------------------
-# CaseFiling._get_records
-# ---------------------------------------------------------------------------
 
 
 class TestGetRecords:
@@ -362,11 +319,6 @@ class TestGetRecords:
         assert result.complaint_number is None
 
 
-# ---------------------------------------------------------------------------
-# CaseFiling._extract_case_filings
-# ---------------------------------------------------------------------------
-
-
 class TestExtractCaseFilings:
     """Tests for ``CaseFiling._extract_case_filings``."""
 
@@ -384,11 +336,6 @@ class TestExtractCaseFilings:
         """An HTML page without the results table raises ``InvalidPageContentError``."""
         with pytest.raises(InvalidPageContentError):
             CaseFiling._extract_case_filings(_MISSING_TABLE_HTML)
-
-
-# ---------------------------------------------------------------------------
-# CaseFiling._raise_for_invalid_content
-# ---------------------------------------------------------------------------
 
 
 class TestRaiseForInvalidContent:
@@ -420,11 +367,6 @@ class TestRaiseForInvalidContent:
             mock_logger.warning.assert_called_once()
 
 
-# ---------------------------------------------------------------------------
-# CaseFiling.from_docket_number
-# ---------------------------------------------------------------------------
-
-
 class TestFromDocketNumber:
     """Tests for ``CaseFiling.from_docket_number``."""
 
@@ -445,11 +387,6 @@ class TestFromDocketNumber:
             result = CaseFiling.from_docket_number("CP-51-CR-0001234-2020")
         assert isinstance(result, CaseFiling)
         assert result.docket_number == "CP-51-CR-0001234-2020"
-
-
-# ---------------------------------------------------------------------------
-# CaseFiling.from_defendant
-# ---------------------------------------------------------------------------
 
 
 class TestFromDefendant:

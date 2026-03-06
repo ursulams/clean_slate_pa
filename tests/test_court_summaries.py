@@ -20,24 +20,14 @@ from pa_record_retriever.models import County, CourtType, DocketType
 from pa_record_retriever.pypdf.enum import DelimiterGlyph, FontWeight
 from pa_record_retriever.requests import InvalidResponseError
 
-# ---------------------------------------------------------------------------
-# Delimiter aliases for readability
-# ---------------------------------------------------------------------------
-
 _EO = DelimiterGlyph.END_OBJECT  # "\n"
 _R = DelimiterGlyph.RETURN  # "↩"
 _AO = DelimiterGlyph.ATTRIBUTES_OPEN  # "《"
 _AC = DelimiterGlyph.ATTRIBUTES_CLOSE  # "》"
 _B = FontWeight.BOLD  # "bold"
 
-# Status and docket attribute blocks matching the regex patterns
 _STATUS_ATTRS = f"{_AO}040|050|060|{_B}{_AC}"
 _DOCKET_ATTRS = f"{_AO}060|080|100|{_B}{_AC}"
-
-
-# ---------------------------------------------------------------------------
-# SealedCaseError
-# ---------------------------------------------------------------------------
 
 
 class TestSealedCaseError:
@@ -53,11 +43,6 @@ class TestSealedCaseError:
         assert "sealed" in str(err).lower()
 
 
-# ---------------------------------------------------------------------------
-# InvalidQueryStringError
-# ---------------------------------------------------------------------------
-
-
 class TestInvalidQueryStringError:
     """Tests for the ``InvalidQueryStringError`` exception class."""
 
@@ -71,11 +56,6 @@ class TestInvalidQueryStringError:
         assert "/Report/Unknown?x=1" in str(err)
 
 
-# ---------------------------------------------------------------------------
-# NoFilingsFoundError
-# ---------------------------------------------------------------------------
-
-
 class TestNoFilingsFoundError:
     """Tests for the ``NoFilingsFoundError`` exception class."""
 
@@ -85,11 +65,6 @@ class TestNoFilingsFoundError:
         assert "CP-51-CR-0001234-2020" in str(err)
 
 
-# ---------------------------------------------------------------------------
-# NoCourtSummaryUrlError
-# ---------------------------------------------------------------------------
-
-
 class TestNoCourtSummaryUrlError:
     """Tests for the ``NoCourtSummaryUrlError`` exception class."""
 
@@ -97,11 +72,6 @@ class TestNoCourtSummaryUrlError:
         """The error message includes the docket number."""
         err = NoCourtSummaryUrlError("CP-51-CR-0001234-2020")
         assert "CP-51-CR-0001234-2020" in str(err)
-
-
-# ---------------------------------------------------------------------------
-# Sentence model
-# ---------------------------------------------------------------------------
 
 
 class TestSentence:
@@ -132,11 +102,6 @@ class TestSentence:
             program_type="Incarceration",
         )
         assert sentence.sentence_type == "Incarceration"
-
-
-# ---------------------------------------------------------------------------
-# Charge model
-# ---------------------------------------------------------------------------
 
 
 class TestCharge:
@@ -170,11 +135,6 @@ class TestCharge:
         charge = Charge(charge_description="Theft", sentence=[sentence_data])
         assert len(charge.sentences) == 1
         assert isinstance(charge.sentences[0], Sentence)
-
-
-# ---------------------------------------------------------------------------
-# Case model
-# ---------------------------------------------------------------------------
 
 
 class TestCase:
@@ -228,11 +188,6 @@ class TestCase:
         assert case.charges == []
 
 
-# ---------------------------------------------------------------------------
-# CourtSummary._remove_footers
-# ---------------------------------------------------------------------------
-
-
 class TestRemoveFooters:
     """Tests for ``CourtSummary._remove_footers``."""
 
@@ -268,11 +223,6 @@ class TestRemoveFooters:
         text = f"before\n{block}after"
         result = CourtSummary._remove_footers(text)
         assert "Recent entries" not in result
-
-
-# ---------------------------------------------------------------------------
-# CourtSummary._handle_status_line
-# ---------------------------------------------------------------------------
 
 
 class TestHandleStatusLine:
@@ -317,11 +267,6 @@ class TestHandleStatusLine:
         CourtSummary._handle_status_line(line, current_status="", current_county="", output_lines=output)
         # Subject name line should be in output
         assert any(subject in o for o in output)
-
-
-# ---------------------------------------------------------------------------
-# CourtSummary._handle_docket_number_line
-# ---------------------------------------------------------------------------
 
 
 class TestHandleDocketNumberLine:
@@ -375,11 +320,6 @@ class TestHandleDocketNumberLine:
         assert new_county == county
 
 
-# ---------------------------------------------------------------------------
-# CourtSummary._is_duplicate_case_line
-# ---------------------------------------------------------------------------
-
-
 class TestIsDuplicateCaseLine:
     """Tests for ``CourtSummary._is_duplicate_case_line``."""
 
@@ -410,11 +350,6 @@ class TestIsDuplicateCaseLine:
         """An ``Arrest Dt:`` prefix is recognized as a charge header."""
         line = "Arrest Dt: 01/01/2020"
         assert CourtSummary._is_duplicate_case_line(line, [line]) is True
-
-
-# ---------------------------------------------------------------------------
-# CourtSummary._preprocess
-# ---------------------------------------------------------------------------
 
 
 class TestPreprocess:
@@ -465,11 +400,6 @@ class TestPreprocess:
         assert result.count(otn_line) == 1
 
 
-# ---------------------------------------------------------------------------
-# CourtSummary._raise_for_status
-# ---------------------------------------------------------------------------
-
-
 class TestRaiseForStatus:
     """Tests for ``CourtSummary._raise_for_status``."""
 
@@ -494,11 +424,6 @@ class TestRaiseForStatus:
         mock_response.text = "NO DATA FOUND FOR THE REPORT"
         with pytest.raises(SealedCaseError):
             CourtSummary._raise_for_status(mock_response)
-
-
-# ---------------------------------------------------------------------------
-# CourtSummary._raise_for_invalid_content
-# ---------------------------------------------------------------------------
 
 
 class TestRaiseForInvalidContent:
@@ -570,11 +495,6 @@ class TestRaiseForInvalidContent:
             CourtSummary._raise_for_invalid_content(b"fake pdf")
 
 
-# ---------------------------------------------------------------------------
-# CourtSummary.from_query_string
-# ---------------------------------------------------------------------------
-
-
 class TestFromQueryString:
     """Tests for ``CourtSummary.from_query_string``."""
 
@@ -619,11 +539,6 @@ class TestFromQueryString:
             result = CourtSummary.from_query_string("/Report/CpCourtSummary?dnh=abc")
 
         assert result is mock_summary
-
-
-# ---------------------------------------------------------------------------
-# CourtSummary.from_related_docket_number
-# ---------------------------------------------------------------------------
 
 
 class TestFromRelatedDocketNumber:
