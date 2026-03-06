@@ -71,7 +71,7 @@ summary = CourtSummary.from_related_docket_number("CP-51-CR-0001234-2020")
 Or fetch from a court summary URL obtained from a `CaseFiling`:
 
 ```python
-filings = CaseFiling.from_related_docket_number("CP-51-CR-0001234-2020")
+filings = CaseFiling.from_defendant(first_name="Allen", last_name="Iverson")
 summary = CourtSummary.from_query_string(filings[0].court_summary_url)
 ```
 
