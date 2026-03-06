@@ -4,7 +4,7 @@ import httpx
 from pydantic import Field
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
-from pa_ujs_document_parser.pydantic import BaseModel
+from pa_record_retriever.pydantic import BaseModel
 
 retry_x3 = retry(
     stop=stop_after_attempt(3),

@@ -9,7 +9,7 @@ from pypdf import PageObject
 from pypdf._cmap import _parse_to_unicode
 from pypdf.generic import DictionaryObject, EncodedStreamObject, IndirectObject, NameObject
 
-from pa_ujs_document_parser.pypdf.enum import DelimiterGlyph, Entry, FontEntry, FontWeight
+from pa_record_retriever.pypdf.enum import DelimiterGlyph, Entry, FontEntry, FontWeight
 
 
 class Type1FontDictionary(BaseModel):
@@ -83,6 +83,8 @@ class Type1FontDictionary(BaseModel):
         """Converts the subtype to a string if it is passed as a `NameObject`."""
         if isinstance(value, NameObject):
             return str(value)
+
+        return value
 
 
 class Font(BaseModel):

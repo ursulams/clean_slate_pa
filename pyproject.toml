@@ -1,5 +1,5 @@
 [project]
-name = "pa-ujs-document-parser"
+name = "pa-record-retriever"
 version = "0.0.0"
 description = "A Python library for fetching and parsing public court records from the Pennsylvania Unified Judicial System (UJS) portal."
 authors = [
@@ -109,4 +109,4 @@ source = ["src"]
 omit = ["tests/*"]
 
 [tool.coverage.report]
-fail_under = 60
+fail_under = 90

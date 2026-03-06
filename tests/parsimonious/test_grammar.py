@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from parsimonious.exceptions import ParseError
 
-from pa_ujs_document_parser.parsimonious.grammar import Grammar
+from pa_record_retriever.parsimonious.grammar import Grammar
 
 
 class TestGrammar:

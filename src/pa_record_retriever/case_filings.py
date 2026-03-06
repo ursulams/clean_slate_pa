@@ -11,7 +11,7 @@ from justhtml import JustHTML, Node
 from loguru import logger
 from pydantic import ConfigDict, Field, field_validator
 
-from pa_ujs_document_parser.models import (
+from pa_record_retriever.models import (
     CaseStatusMixin,
     CaseTypeMixin,
     Constant,
@@ -23,7 +23,7 @@ from pa_ujs_document_parser.models import (
     OtnMixin,
     SearchBy,
 )
-from pa_ujs_document_parser.requests import ContentType, InvalidPageContentError, InvalidResponseError, retry_x3
+from pa_record_retriever.requests import ContentType, InvalidPageContentError, InvalidResponseError, retry_x3
 
 
 class EmptyFieldError(ValueError):
@@ -343,9 +343,9 @@ class CaseFiling(CaseTypeMixin, OtnMixin, CaseStatusMixin, DocketNumberMixin, Co
         return html_str
 
     @classmethod
-    def from_related_docket_number(cls, docket_number: str) -> list[CaseFiling]:
+    def from_docket_number(cls, docket_number: str) -> CaseFiling | None:
         """
-        Fetches all case filings associated with the given docket number.
+        Fetches the case filing associated with the given docket number.
 
         Submits a docket-number search to the UJS portal via ``_fetch`` and parses
         the results via ``_extract_case_filings``.
@@ -355,8 +355,8 @@ class CaseFiling(CaseTypeMixin, OtnMixin, CaseStatusMixin, DocketNumberMixin, Co
                 (e.g. ``CP-51-CR-0001234-2020``).
 
         Returns:
-            list[CaseFiling]: All matching ``CaseFiling`` instances, or an empty list
-                if none are found.
+            CaseFiling | None: The matching ``CaseFiling`` instance, or None
+                if no match is found.
 
         Raises:
             EmptyFieldError: If ``docket_number`` is empty.
@@ -374,7 +374,9 @@ class CaseFiling(CaseTypeMixin, OtnMixin, CaseStatusMixin, DocketNumberMixin, Co
         }
 
         html_str = cls._fetch(body)
-        return cls._extract_case_filings(html_str)
+        case_filings = cls._extract_case_filings(html_str)
+
+        return case_filings[0] if case_filings else None
 
     @classmethod
     def from_defendant(
