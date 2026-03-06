@@ -5,7 +5,7 @@ A Python library for fetching and parsing public court records from the [Pennsyl
 ## Installation
 
 ```bash
-pip install pa-ujs-document-parser
+pip install git+https://github.com/Free-Our-Vote/pa-ujs-document-parser.git
 ```
 
 ## Overview

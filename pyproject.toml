@@ -1,7 +1,7 @@
 [project]
 name = "pa-ujs-document-parser"
 version = "0.0.0"
-description = ""
+description = "A Python library for fetching and parsing public court records from the Pennsylvania Unified Judicial System (UJS) portal."
 authors = [
     {name = "Tyler Richardett", email = "tyler@freeourvote.org"},
 ]
