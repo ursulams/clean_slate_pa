@@ -1,0 +1,72 @@
+name: Bump version
+
+on:
+  workflow_call:
+    inputs:
+      bump-type:
+        required: true
+        type: string
+    outputs:
+      tag-name:
+        value: ${{ jobs.bump_version.outputs.tag_name }}
+
+jobs:
+  bump_version:
+    runs-on: ubuntu-latest
+
+    outputs:
+      tag_name: ${{ steps.bump-version.outputs.tag_name }}
+
+    steps:
+      - name: Create GitHub app token
+        uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.ACTIONS_APP_ID }}
+          private-key: ${{ secrets.ACTIONS_APP_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Configure user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Install UV
+        run: pip install uv
+
+      - name: Bump version
+        id: bump-version
+        run: |
+          # Get current version
+          current_version=$(uv version --short)
+
+          # Bump version
+          uv version --bump "${{ inputs.bump-type }}"
+
+          # Get new version
+          new_version=$(uv version --short)
+
+          # Set output parameters
+          echo "current_version=${current_version}" >> "$GITHUB_OUTPUT"
+          echo "new_version=${new_version}" >> "$GITHUB_OUTPUT"
+          echo "tag_name=v${new_version}" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push
+        run: |
+          git add pyproject.toml
+          git commit -m "Bump version from ${{ steps.bump-version.outputs.current_version }} to ${{ steps.bump-version.outputs.new_version }}"
+          git push
+
+      - name: Create tag
+        run: |
+          git tag ${{ steps.bump-version.outputs.tag_name }}
+          git push --tags

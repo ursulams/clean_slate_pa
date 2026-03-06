@@ -1,0 +1,127 @@
+# Root
+root = (subject / criminal_history / any_object)*
+
+
+# Subject
+subject =
+    defendant_name_object
+    (!case (subject_objects / any_object))*
+
+subject_objects =
+    address_aliases_object /
+    ("DOB:" space* date_of_birth attr_regular) /
+    ("Race:" space* race attr_regular) /
+    ("Hair:" space* hair attr_regular) /
+    ("Eyes:" space* eyes attr_regular) /
+    ("Sex:" space* sex attr_regular)
+
+## Name(s)
+defendant_name = character+
+defendant_name_object = defendant_name attr_open &"03" coordinates bold attr_close end_object
+
+address = character+
+alias = character+
+address_aliases_object =
+    address? return?
+    ("Aliases:" return alias? (return alias)*)?
+    attr_open &"03" coordinates regular attr_close end_object
+
+## Demographics
+date_of_birth = date{1}
+race = character+
+hair = character+
+eyes = character+
+sex = character+
+
+
+# Criminal History
+criminal_history = case+
+
+## Cases
+case =
+    case_status attr_open &"04" coordinates bold attr_close end_object
+    county return docket_number attr_open &"06" coordinates bold attr_close end_object
+    (!case (case_objects / any_object))*
+
+case_objects = case_details / charges
+
+case_status = character+
+county = character+
+docket_number = &("CP-" / "MC-") character+
+
+case_details =
+    ("OTN:" space* otn attr_regular) /
+    ("DC No:" space* dcn attr_regular) /
+    ("Proc Status:" space* case_state attr_regular) /
+    ("Arrest Dt:" space* arrest_date attr_regular) /
+    ("Disp Date:" space* disposition_date attr_regular) /
+    ("Disp Judge:" space* judge attr_regular) /
+    ("Legacy No:" space* legacy_number attr_regular) /
+    ("Trial Dt:" space* trial_date attr_regular) /
+    ("Def Atty:" space* defense_attorney attr_regular) /
+    ("Last  Action Date:" space* last_action_date attr_regular) /
+    ("Last Action:" space* last_action attr_regular) /
+    ("Last Action Room:" space* last_action_room attr_regular) /
+    ("Next Action Date:" space* next_action_date attr_regular) /
+    ("Next Action:" space* next_action attr_regular) /
+    ("Next Action Room:" space* next_action_room attr_regular)
+
+otn = character+
+dcn = character+
+case_state = character_or_return+
+
+arrest_date = date{1}
+disposition_date = date{1}
+judge = character+
+
+trial_date = date{1}
+legacy_number = character+
+
+defense_attorney = character+
+
+last_action_date = date{1}
+last_action = character+
+last_action_room = character+
+
+next_action_date = date{1}
+next_action = character+
+next_action_room = character+
+
+### Charges
+charges = (charge_headers attr_bold){5,9} charge+
+charge =
+    charge_description attr_open &"28" coordinates regular attr_close end_object
+    (grade attr_open &"26" coordinates regular attr_close end_object)?
+    (statute attr_open &"11" coordinates regular attr_close end_object)?
+    sequence_number attr_open &"07" coordinates regular attr_close end_object
+    (disposition attr_open &"44" coordinates regular attr_close end_object)?
+    sentence*
+
+sequence_number = digit{1,5}
+statute = character+
+grade = character+
+charge_description = character_or_return+
+disposition = character_or_return+
+
+charge_headers =
+    "Seq No" /
+    "Statute" /
+    "Grade" /
+    "Description" /
+    "Disposition" /
+    "Sentence Type" /
+    "Program Period" /
+    "Sentence Length" /
+    "Sentence Dt."
+
+#### Sentences
+sentence =
+    sentence_type attr_open &"15" coordinates regular attr_close end_object
+    (sentence_length attr_open &"38" coordinates regular attr_close end_object)?
+    (program_period attr_open &"25" coordinates regular attr_close end_object)?
+    sentence_date attr_open &"09" coordinates regular attr_close end_object
+
+sentence_date = date{1}
+sentence_type = character+
+program_period = character+
+sentence_length = character_or_return+

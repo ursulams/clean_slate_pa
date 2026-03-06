@@ -1,0 +1,42 @@
+{
+  "name": "${localWorkspaceFolderBasename}",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "features": {
+    "ghcr.io/jsburckhardt/devcontainer-features/uv:1": {}
+  },
+  "remoteEnv": {
+    "WORKSPACE": "${containerWorkspaceFolder}"
+  },
+  "postCreateCommand": [
+    "/bin/sh",
+    "-c",
+    "/bin/sh ./.devcontainer/postCreateCommand.sh"
+  ],
+  "runArgs": ["--env-file", "./.env"],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "ms-vscode.makefile-tools",
+        "tamasfe.even-better-toml"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true,
+        "[json]": {
+          "editor.defaultFormatter": "vscode.json-language-features"
+        },
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff"
+        },
+        "python.defaultInterpreterPath": "/workspaces/${localWorkspaceFolderBasename}/.venv/bin/python",
+        "python.terminal.activateEnvInCurrentTerminal": true,
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestEnabled": true,
+        "python.testing.pytestPath": "/workspaces/${localWorkspaceFolderBasename}/.venv/bin/pytest",
+        "python.testing.pytestArgs": ["tests"]
+      }
+    }
+  }
+}

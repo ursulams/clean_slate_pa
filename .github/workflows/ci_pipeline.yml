@@ -1,0 +1,35 @@
+name: CI pipeline
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "uv.lock"
+      - "pyproject.toml"
+      - ".github/workflows/ci_pipeline.yml"
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install UV
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run linter
+        run: uv run ruff check
+
+      - name: Run tests and generate coverage report
+        run: |
+          uv run coverage run -m pytest -rpPfE
+          uv run coverage report -m -i
