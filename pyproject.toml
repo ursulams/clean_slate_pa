@@ -1,6 +1,6 @@
 [project]
 name = "pa-record-retriever"
-version = "0.0.0"
+version = "0.1.0"
 description = "A Python library for fetching and parsing public court records from the Pennsylvania Unified Judicial System (UJS) portal."
 authors = [
     {name = "Tyler Richardett", email = "tyler@freeourvote.org"},
