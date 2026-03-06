@@ -1,0 +1,9 @@
+# Individual characters and variables
+character_or_return = character / return
+date = digit{2} slash digit{2} slash digit{4}
+
+# Terminating sequences
+end = attr_light / attr_regular / attr_bold
+
+# Wildcard objects
+any_object = character_or_return* end
