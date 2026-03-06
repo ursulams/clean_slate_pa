@@ -84,6 +84,8 @@ class Type1FontDictionary(BaseModel):
         if isinstance(value, NameObject):
             return str(value)
 
+        return value
+
 
 class Font(BaseModel):
     """

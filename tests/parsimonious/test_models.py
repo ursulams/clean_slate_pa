@@ -67,7 +67,7 @@ class TestParsedDocument:
                     """Returns text unchanged."""
                     return text
 
-            with patch("pa_ujs_document_parser.parsimonious.models.importlib") as mock_importlib:
+            with patch("pa_record_retriever.parsimonious.models.importlib") as mock_importlib:
                 mock_importlib.resources.files.return_value.joinpath.return_value = peg_file
                 grammar = Doc.grammar()
 
@@ -90,7 +90,7 @@ class TestParsedDocument:
                     """Returns text unchanged."""
                     return text
 
-            with patch("pa_ujs_document_parser.parsimonious.models.importlib") as mock_importlib:
+            with patch("pa_record_retriever.parsimonious.models.importlib") as mock_importlib:
                 mock_importlib.resources.files.return_value.joinpath.return_value = peg_file
                 grammar = Doc.grammar()
 
@@ -123,8 +123,8 @@ class TestParsedDocument:
                     return text
 
             with (
-                patch("pa_ujs_document_parser.parsimonious.models.PdfReader") as mock_reader_cls,
-                patch("pa_ujs_document_parser.parsimonious.models.Page") as mock_page_cls,
+                patch("pa_record_retriever.parsimonious.models.PdfReader") as mock_reader_cls,
+                patch("pa_record_retriever.parsimonious.models.Page") as mock_page_cls,
                 patch.object(Doc, "grammar") as mock_grammar_fn,
                 patch.object(Doc, "visitor") as mock_visitor_fn,
             ):
@@ -167,8 +167,8 @@ class TestParsedDocument:
             mock_result = MagicMock()
 
             with (
-                patch("pa_ujs_document_parser.parsimonious.models.PdfReader") as mock_reader_cls,
-                patch("pa_ujs_document_parser.parsimonious.models.Page") as mock_page_cls,
+                patch("pa_record_retriever.parsimonious.models.PdfReader") as mock_reader_cls,
+                patch("pa_record_retriever.parsimonious.models.Page") as mock_page_cls,
                 patch.object(Doc, "grammar") as mock_grammar_fn,
                 patch.object(Doc, "visitor") as mock_visitor_fn,
             ):
@@ -210,8 +210,8 @@ class TestParsedDocument:
             parsed_texts: list[str] = []
 
             with (
-                patch("pa_ujs_document_parser.parsimonious.models.PdfReader") as mock_reader_cls,
-                patch("pa_ujs_document_parser.parsimonious.models.Page") as mock_page_cls,
+                patch("pa_record_retriever.parsimonious.models.PdfReader") as mock_reader_cls,
+                patch("pa_record_retriever.parsimonious.models.Page") as mock_page_cls,
                 patch.object(Doc, "grammar") as mock_grammar_fn,
                 patch.object(Doc, "visitor") as mock_visitor_fn,
             ):
@@ -261,8 +261,8 @@ class TestParsedDocument:
             received_args: list[object] = []
 
             with (
-                patch("pa_ujs_document_parser.parsimonious.models.PdfReader") as mock_reader_cls,
-                patch("pa_ujs_document_parser.parsimonious.models.Page") as mock_page_cls,
+                patch("pa_record_retriever.parsimonious.models.PdfReader") as mock_reader_cls,
+                patch("pa_record_retriever.parsimonious.models.Page") as mock_page_cls,
                 patch.object(Doc, "grammar") as mock_grammar_fn,
                 patch.object(Doc, "visitor") as mock_visitor_fn,
             ):
@@ -301,8 +301,8 @@ class TestParsedDocument:
                     return text
 
             with (
-                patch("pa_ujs_document_parser.parsimonious.models.PdfReader") as mock_reader_cls,
-                patch("pa_ujs_document_parser.parsimonious.models.Page") as mock_page_cls,
+                patch("pa_record_retriever.parsimonious.models.PdfReader") as mock_reader_cls,
+                patch("pa_record_retriever.parsimonious.models.Page") as mock_page_cls,
                 patch.object(Doc, "grammar") as mock_grammar_fn,
                 patch.object(Doc, "visitor") as mock_visitor_fn,
             ):

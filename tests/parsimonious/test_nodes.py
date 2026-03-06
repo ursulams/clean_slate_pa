@@ -562,7 +562,7 @@ class TestNodeVisitor:
             class M(BaseModel):
                 item: _ChildModel | OtherModel
 
-            with patch("pa_ujs_document_parser.parsimonious.nodes.logger") as mock_logger:
+            with patch("pa_record_retriever.parsimonious.nodes.logger") as mock_logger:
 
                 class V(NodeVisitor):
                     model_class = M
@@ -572,7 +572,7 @@ class TestNodeVisitor:
 
         def test_unsupported_field_type_logs_warning(self) -> None:
             """An unsupported field type logs a warning and creates no visitor."""
-            with patch("pa_ujs_document_parser.parsimonious.nodes.logger") as mock_logger:
+            with patch("pa_record_retriever.parsimonious.nodes.logger") as mock_logger:
 
                 class V(NodeVisitor):
                     model_class = _ModelWithUnsupportedField
@@ -865,7 +865,7 @@ class TestNodeVisitor:
 
             V._add_model_visitor("m", M)
             node = MagicMock()
-            with patch("pa_ujs_document_parser.parsimonious.nodes.logger") as mock_logger:
+            with patch("pa_record_retriever.parsimonious.nodes.logger") as mock_logger:
                 V.visit_m(None, node, [{"name": "Alice", "extra": "x"}])
             mock_logger.warning.assert_called_once()
 
@@ -880,7 +880,7 @@ class TestNodeVisitor:
 
             V._add_model_visitor("m", M)
             node = MagicMock()
-            with patch("pa_ujs_document_parser.parsimonious.nodes.logger") as mock_logger:
+            with patch("pa_record_retriever.parsimonious.nodes.logger") as mock_logger:
                 V.visit_m(None, node, ["not a dict"])
             mock_logger.warning.assert_called_once()
 
@@ -895,7 +895,7 @@ class TestNodeVisitor:
 
             V._add_model_visitor("m", M)
             node = MagicMock()
-            with patch("pa_ujs_document_parser.parsimonious.nodes.logger") as mock_logger:
+            with patch("pa_record_retriever.parsimonious.nodes.logger") as mock_logger:
                 V.visit_m(None, node, [{"count": 1}, {"count": 2}])
             mock_logger.warning.assert_called_once()
 
