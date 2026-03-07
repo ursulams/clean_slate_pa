@@ -559,7 +559,7 @@ function buildVerifyScreen(candidates) {
         <div>
           <div class="font-bold text-gray-900 text-lg">${escHtml(c.initials)}</div>
           <div class="text-sm text-gray-500">Born: ${escHtml(String(c.birth_year))} &nbsp;·&nbsp; ${escHtml(c.county)} County</div>
-          <div class="text-sm text-gray-500">${c.case_count} case${c.case_count !== 1 ? 's' : ''} found</div>
+          <div class="text-sm text-gray-500">${formatCaseSummary(c)}</div>
         </div>
         <div class="text-2xl text-gray-300">→</div>
       </div>
@@ -873,6 +873,16 @@ function startOver() {
   document.getElementById('btn-restitution').disabled = true;
   ['no','yes','unsure'].forEach(v => document.getElementById(`rest-${v}`).classList.remove('selected'));
   goTo('screen-welcome');
+}
+
+function formatCaseSummary(c) {
+  const count = c.case_count;
+  const label = `${count} case${count !== 1 ? 's' : ''} found`;
+  if (!c.filing_year_min) return label;
+  const range = c.filing_year_min === c.filing_year_max
+    ? String(c.filing_year_min)
+    : `${c.filing_year_min}–${c.filing_year_max}`;
+  return `${label} &nbsp;·&nbsp; ${range}`;
 }
 
 function escHtml(str) {

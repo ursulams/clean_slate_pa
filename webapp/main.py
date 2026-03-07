@@ -189,31 +189,46 @@ async def search(req: SearchRequest):
     if not criminal_filings:
         return JSONResponse({"found": False, "candidates": []})
 
-    # Group by court_summary_url — one candidate per distinct person
-    # (same court summary = same person)
-    seen_urls: dict[str, dict] = {}
+    # Group by defendant identity (name + DOB) — one card per distinct person.
+    # court_summary_url carries a per-request dnh token so it differs across
+    # filings for the same person and cannot be used as the grouping key.
+    grouped: dict[str, dict] = {}
     for f in criminal_filings:
-        key = f.court_summary_url or f.docket_number
-        if key not in seen_urls:
-            # Anonymize: show only initials + county + year of birth
-            name_parts = (f.defendant_name or "").split(",")
+        name_raw = (f.defendant_name or "").strip()
+        dob_raw = str(f.defendant_date_of_birth) if f.defendant_date_of_birth else ""
+        key = f"{name_raw}|{dob_raw}"
+
+        if key not in grouped:
+            name_parts = name_raw.split(",")
             last_init = name_parts[0].strip()[0].upper() if name_parts and name_parts[0].strip() else "?"
             first_init = name_parts[1].strip()[0].upper() if len(name_parts) > 1 and name_parts[1].strip() else "?"
             initials = f"{last_init}.{first_init}."
             county = str(f.county) if f.county else "Unknown county"
             birth_year = f.defendant_date_of_birth.year if f.defendant_date_of_birth else "Unknown year"
 
-            seen_urls[key] = {
+            grouped[key] = {
                 "court_summary_url": f.court_summary_url,
                 "initials": initials,
                 "county": county,
                 "birth_year": birth_year,
                 "case_count": 1,
+                "filing_years": [f.filing_date.year] if f.filing_date else [],
             }
         else:
-            seen_urls[key]["case_count"] += 1
+            grouped[key]["case_count"] += 1
+            if f.filing_date:
+                grouped[key]["filing_years"].append(f.filing_date.year)
+            # Prefer a non-None court_summary_url
+            if grouped[key]["court_summary_url"] is None and f.court_summary_url:
+                grouped[key]["court_summary_url"] = f.court_summary_url
 
-    candidates = list(seen_urls.values())
+    # Compute filing year range and drop the raw list before sending to client
+    for entry in grouped.values():
+        years = entry.pop("filing_years")
+        entry["filing_year_min"] = min(years) if years else None
+        entry["filing_year_max"] = max(years) if years else None
+
+    candidates = list(grouped.values())
 
     return JSONResponse({
         "found": True,
