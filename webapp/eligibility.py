@@ -636,17 +636,47 @@ def _evaluate_charge(
                 plain_language="We couldn't find when this case was decided. A lawyer can check if enough time has passed.",
             )
 
+        # Subsequent conviction check applies to all M1 branches.
+        # Must be computed here, before branching, because both terroristic
+        # threats (10-yr) and standard M1 (7-yr) share the same disqualifier.
+        #
+        # TEST: 2018 M1 blocked by 2021 conviction
+        #   case_m1 = Case(docket_number="CP-51-CR-0001000-2018",
+        #                  docket_type="Criminal",
+        #                  disposition_date=date(2018, 6, 1), case_status="Closed",
+        #                  charges=[Charge(grade="M1", disposition="Guilty")])
+        #   case_later = Case(docket_number="CP-51-CR-0002000-2021",
+        #                     docket_type="Criminal",
+        #                     disposition_date=date(2021, 3, 15), case_status="Closed",
+        #                     charges=[Charge(grade="M2", disposition="Guilty")])
+        #   result = evaluate([case_m1, case_later], dob=date(1985, 1, 1),
+        #                     restitution_flag="no")
+        #   assert result.cases[0].charges[0].verdict == Verdict.NOT_ELIGIBLE
+        #   # 7+ years have passed since the 2018 M1, but the 2021 M2
+        #   # is a subsequent felony/misdemeanor conviction that blocks sealing.
+        has_subsequent_fm = _subsequent_felony_or_misdemeanor_conviction(disp_date, all_cases)
+
         # Terroristic threats M1 — 10-year petition
         if _is_terroristic_threats(charge):
-            if years_since_disp >= 10:
+            if years_since_disp >= 10 and not has_subsequent_fm:
                 return ChargeResult(
                     charge_description=charge.charge_description,
                     statute=charge.statute,
                     grade=charge.grade,
                     disposition=charge.disposition,
                     verdict=Verdict.PETITION_SEAL,
-                    reason="Terroristic Threats §2706 M1, 10+ years — petition-based sealing eligible.",
+                    reason="Terroristic Threats §2706 M1, 10+ years, no subsequent F/M conviction — petition-based sealing eligible.",
                     plain_language="This terroristic threats charge is 10 or more years old. You may be able to seal it by filing a petition with the Court of Common Pleas in the county where you were convicted.",
+                )
+            elif years_since_disp >= 10 and has_subsequent_fm:
+                return ChargeResult(
+                    charge_description=charge.charge_description,
+                    statute=charge.statute,
+                    grade=charge.grade,
+                    disposition=charge.disposition,
+                    verdict=Verdict.NOT_ELIGIBLE,
+                    reason="Terroristic Threats §2706 M1, 10+ years, BUT subsequent felony or misdemeanor conviction found.",
+                    plain_language="This charge is old enough, but a later conviction is blocking it from being sealed.",
                 )
             else:
                 remaining = 10 - years_since_disp
@@ -661,15 +691,25 @@ def _evaluate_charge(
                 )
 
         # Standard M1 — 7-year petition
-        if years_since_disp >= 7:
+        if years_since_disp >= 7 and not has_subsequent_fm:
             return ChargeResult(
                 charge_description=charge.charge_description,
                 statute=charge.statute,
                 grade=charge.grade,
                 disposition=charge.disposition,
                 verdict=Verdict.PETITION_SEAL,
-                reason="M1, 7+ years — petition-based sealing eligible.",
+                reason="M1, 7+ years, no subsequent F/M conviction — petition-based sealing eligible.",
                 plain_language="This misdemeanor is 7 or more years old. You may be able to seal it, but you need to file a petition with the Court of Common Pleas in the county where you were convicted.",
+            )
+        elif years_since_disp >= 7 and has_subsequent_fm:
+            return ChargeResult(
+                charge_description=charge.charge_description,
+                statute=charge.statute,
+                grade=charge.grade,
+                disposition=charge.disposition,
+                verdict=Verdict.NOT_ELIGIBLE,
+                reason="M1, 7+ years, BUT subsequent felony or misdemeanor conviction found.",
+                plain_language="This misdemeanor is old enough, but a later conviction is blocking it from being sealed.",
             )
         else:
             remaining = 7 - years_since_disp
