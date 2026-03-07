@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="description" content="Find out if your Pennsylvania record may qualify to be sealed under the Clean Slate Act. Free, instant, no login required." />
+  <title>Clean Slate PA — Record Check</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:  '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom styles Tailwind can't handle */
+    body { -webkit-tap-highlight-color: transparent; }
+
+    .screen { display: none; }
+    .screen.active { display: flex; }
+
+    .verdict-green  { --vbg: #dcfce7; --vborder: #16a34a; --vtext: #15803d; --vicon-bg: #16a34a; }
+    .verdict-purple { --vbg: #f3e8ff; --vborder: #7c3aed; --vtext: #6d28d9; --vicon-bg: #7c3aed; }
+    .verdict-blue   { --vbg: #dbeafe; --vborder: #1d4ed8; --vtext: #1e40af; --vicon-bg: #1d4ed8; }
+    .verdict-yellow { --vbg: #fef9c3; --vborder: #ca8a04; --vtext: #854d0e; --vicon-bg: #ca8a04; }
+    .verdict-gray   { --vbg: #f3f4f6; --vborder: #6b7280; --vtext: #374151; --vicon-bg: #6b7280; }
+    .verdict-teal   { --vbg: #ccfbf1; --vborder: #0d9488; --vtext: #0f766e; --vicon-bg: #0d9488; }
+
+    .verdict-card {
+      background: var(--vbg);
+      border-left: 4px solid var(--vborder);
+    }
+    .verdict-label {
+      color: var(--vtext);
+      font-weight: 600;
+    }
+    .verdict-icon-bg {
+      background: var(--vicon-bg);
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { animation: spin 1s linear infinite; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.3s ease-out; }
+
+    input[type="text"], input[type="date"] {
+      font-size: 16px; /* prevents iOS zoom */
+    }
+
+    .big-btn {
+      display: block;
+      width: 100%;
+      padding: 1rem 1.5rem;
+      font-size: 1.125rem;
+      font-weight: 600;
+      border-radius: 0.75rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+      -webkit-appearance: none;
+    }
+    .big-btn:active { transform: scale(0.98); }
+    .big-btn-primary {
+      background: #0284c7;
+      color: white;
+    }
+    .big-btn-primary:hover { background: #0369a1; }
+    .big-btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
+    .big-btn-outline {
+      background: white;
+      color: #0284c7;
+      border: 2px solid #0284c7;
+    }
+    .big-btn-outline:hover { background: #f0f9ff; }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: white;
+      margin-bottom: 0.75rem;
+      width: 100%;
+      text-align: left;
+    }
+    .radio-option:hover { border-color: #0284c7; background: #f0f9ff; }
+    .radio-option.selected { border-color: #0284c7; background: #e0f2fe; }
+    .radio-dot {
+      width: 1.25rem; height: 1.25rem;
+      border-radius: 50%;
+      border: 2px solid #cbd5e1;
+      margin-right: 0.75rem;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .radio-option.selected .radio-dot {
+      border-color: #0284c7;
+      background: #0284c7;
+    }
+    .radio-option.selected .radio-dot::after {
+      content: '';
+      width: 0.5rem; height: 0.5rem;
+      background: white;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen font-sans">
+
+<!-- ============================================================
+     GLOBAL DISCLAIMER BAR (always visible)
+     ============================================================ -->
+<div class="bg-amber-50 border-b border-amber-200 px-4 py-2 text-center text-xs text-amber-800 leading-tight">
+  General information only — not legal advice. Always confirm with a free lawyer before taking action.
+</div>
+
+<!-- ============================================================
+     APP CONTAINER
+     ============================================================ -->
+<div id="app" class="max-w-lg mx-auto px-4 pb-24">
+
+  <!-- ============================================================
+       SCREEN 0: WELCOME
+       ============================================================ -->
+  <div id="screen-welcome" class="screen active flex-col pt-10 fade-in">
+    <div class="text-center mb-8">
+      <div class="text-5xl mb-4">🗝️</div>
+      <h1 class="text-2xl font-bold text-gray-900 mb-3 leading-tight">
+        Check if your Pennsylvania record can be sealed
+      </h1>
+      <p class="text-gray-600 text-base leading-relaxed">
+        Under Pennsylvania's Clean Slate Act, many convictions can be sealed or erased — which means they won't show up on most background checks for jobs and housing.
+      </p>
+    </div>
+
+    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 text-sm text-blue-900 leading-relaxed">
+      <strong>This check is free, private, and instant.</strong> We look up public court records using your name and date of birth. We don't store your information.
+    </div>
+
+    <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-8 text-sm leading-relaxed">
+      <p class="font-semibold text-green-900 mb-1">🗳️ Your voting rights in Pennsylvania</p>
+      <p class="text-green-800">You can vote if you are on parole, probation, or have been released from prison — even if you are in a halfway house. The only time you cannot vote is while physically incarcerated for a felony. <a href="https://www.vote.pa.gov/Register-to-Vote/Pages/Voter-Registration-Applications.aspx" target="_blank" class="underline font-medium">Register to vote →</a></p>
+    </div>
+
+    <button class="big-btn big-btn-primary" onclick="goTo('screen-firstname')">
+      Start my free check →
+    </button>
+
+    <p class="text-center text-xs text-gray-400 mt-4">
+      Usually takes less than 1 minute
+    </p>
+  </div>
+
+  <!-- ============================================================
+       SCREEN 1: FIRST NAME
+       ============================================================ -->
+  <div id="screen-firstname" class="screen flex-col pt-10 fade-in">
+    <button onclick="goTo('screen-welcome')" class="text-sm text-gray-500 mb-6 flex items-center gap-1">
+      ← Back
+    </button>
+    <div class="mb-2 text-sm font-medium text-gray-500 uppercase tracking-wide">Step 1 of 3</div>
+    <h2 class="text-2xl font-bold text-gray-900 mb-2">What's your first name?</h2>
+    <p class="text-gray-500 text-sm mb-6">Enter the name on your court record — it may be different from your nickname.</p>
+
+    <input
+      id="input-firstname"
+      type="text"
+      autocomplete="given-name"
+      autocorrect="off"
+      autocapitalize="words"
+      placeholder="First name"
+      class="w-full px-4 py-4 text-xl border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none mb-6 bg-white"
+      oninput="validateName('firstname')"
+      onkeydown="if(event.key==='Enter') nextFromFirstName()"
+    />
+
+    <button id="btn-firstname" class="big-btn big-btn-primary" disabled onclick="nextFromFirstName()">
+      Continue →
+    </button>
+  </div>
+
+  <!-- ============================================================
+       SCREEN 2: LAST NAME
+       ============================================================ -->
+  <div id="screen-lastname" class="screen flex-col pt-10 fade-in">
+    <button onclick="goTo('screen-firstname')" class="text-sm text-gray-500 mb-6 flex items-center gap-1">
+      ← Back
+    </button>
+    <div class="mb-2 text-sm font-medium text-gray-500 uppercase tracking-wide">Step 2 of 3</div>
+    <h2 class="text-2xl font-bold text-gray-900 mb-2">What's your last name?</h2>
+    <p class="text-gray-500 text-sm mb-6">Enter exactly as it appears on your court record.</p>
+
+    <input
+      id="input-lastname"
+      type="text"
+      autocomplete="family-name"
+      autocorrect="off"
+      autocapitalize="words"
+      placeholder="Last name"
+      class="w-full px-4 py-4 text-xl border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none mb-6 bg-white"
+      oninput="validateName('lastname')"
+      onkeydown="if(event.key==='Enter') nextFromLastName()"
+    />
+
+    <button id="btn-lastname" class="big-btn big-btn-primary" disabled onclick="nextFromLastName()">
+      Continue →
+    </button>
+  </div>
+
+  <!-- ============================================================
+       SCREEN 3: DATE OF BIRTH
+       ============================================================ -->
+  <div id="screen-dob" class="screen flex-col pt-10 fade-in">
+    <button onclick="goTo('screen-lastname')" class="text-sm text-gray-500 mb-6 flex items-center gap-1">
+      ← Back
+    </button>
+    <div class="mb-2 text-sm font-medium text-gray-500 uppercase tracking-wide">Step 3 of 3</div>
+    <h2 class="text-2xl font-bold text-gray-900 mb-2">What's your date of birth?</h2>
+    <p class="text-gray-500 text-sm mb-6">This helps us find <em>your</em> cases and not someone else's.</p>
+
+    <input
+      id="input-dob"
+      type="date"
+      autocomplete="bday"
+      class="w-full px-4 py-4 text-xl border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none mb-6 bg-white"
+      oninput="validateDob()"
+    />
+
+    <button id="btn-dob" class="big-btn big-btn-primary" disabled onclick="submitSearch()">
+      Check my record →
+    </button>
+
+    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 mt-6 text-xs text-gray-500 leading-relaxed">
+      <strong>Your privacy:</strong> We search public Pennsylvania court records. We don't save your name or date of birth. Results are shown only to you.
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: LOADING
+       ============================================================ -->
+  <div id="screen-loading" class="screen flex-col items-center justify-center pt-20 fade-in">
+    <div class="spinner w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full mb-6"></div>
+    <h2 class="text-xl font-bold text-gray-900 mb-2">Checking court records…</h2>
+    <p class="text-gray-500 text-sm text-center">Searching Pennsylvania's court system. This usually takes 10–20 seconds.</p>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: VERIFY (name ambiguity)
+       ============================================================ -->
+  <div id="screen-verify" class="screen flex-col pt-8 fade-in">
+    <h2 class="text-2xl font-bold text-gray-900 mb-2">We found some records</h2>
+    <p class="text-gray-600 text-sm mb-6 leading-relaxed">
+      We found records that match your name. Do any of these look like your cases? We're only showing initials and location to protect everyone's privacy.
+    </p>
+    <div id="candidates-list" class="mb-6"></div>
+    <div id="no-match-section" class="hidden">
+      <button class="big-btn big-btn-outline mt-2" onclick="showNoMatch()">
+        None of these are mine
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: RESTITUTION QUESTION
+       ============================================================ -->
+  <div id="screen-restitution" class="screen flex-col pt-8 fade-in">
+    <h2 class="text-xl font-bold text-gray-900 mb-3">One quick question</h2>
+    <p class="text-gray-700 text-base leading-relaxed mb-6">
+      Do you still owe any money to the court or a victim from any of your cases? This includes court fines, fees, or restitution (money paid to someone who was harmed).
+    </p>
+
+    <button class="radio-option" id="rest-no" onclick="selectRestitution('no')">
+      <span class="radio-dot"></span>
+      <div>
+        <div class="font-semibold text-gray-900">No — I've paid everything</div>
+        <div class="text-sm text-gray-500">All fines and fees are paid off</div>
+      </div>
+    </button>
+
+    <button class="radio-option" id="rest-yes" onclick="selectRestitution('yes')">
+      <span class="radio-dot"></span>
+      <div>
+        <div class="font-semibold text-gray-900">Yes — I still owe money</div>
+        <div class="text-sm text-gray-500">I have unpaid fines, fees, or restitution</div>
+      </div>
+    </button>
+
+    <button class="radio-option" id="rest-unsure" onclick="selectRestitution('unsure')">
+      <span class="radio-dot"></span>
+      <div>
+        <div class="font-semibold text-gray-900">I'm not sure</div>
+        <div class="text-sm text-gray-500">I don't know if I owe anything</div>
+      </div>
+    </button>
+
+    <button id="btn-restitution" class="big-btn big-btn-primary mt-4" disabled onclick="submitCheck()">
+      See my results →
+    </button>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: LOADING RESULTS
+       ============================================================ -->
+  <div id="screen-loading2" class="screen flex-col items-center justify-center pt-20 fade-in">
+    <div class="spinner w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full mb-6"></div>
+    <h2 class="text-xl font-bold text-gray-900 mb-2">Analyzing your record…</h2>
+    <p class="text-gray-500 text-sm text-center">Applying Clean Slate rules to your cases.</p>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: RESULTS
+       ============================================================ -->
+  <div id="screen-results" class="screen flex-col pt-6 fade-in">
+
+    <!-- Overall verdict banner -->
+    <div id="overall-banner" class="rounded-2xl p-5 mb-6"></div>
+
+    <!-- Pending charge warning -->
+    <div id="pending-warning" class="hidden bg-red-50 border border-red-200 rounded-xl p-4 mb-4 text-sm text-red-900 leading-relaxed">
+      <strong>⚠️ You have open cases.</strong> Open cases cannot be sealed. Once they are resolved, come back to check again.
+    </div>
+
+    <!-- Cases -->
+    <div id="cases-container" class="mb-6"></div>
+
+    <!-- Next steps section -->
+    <div class="bg-white border border-gray-200 rounded-2xl p-5 mb-4">
+      <h3 class="font-bold text-gray-900 text-base mb-3">What should I do next?</h3>
+      <div id="next-steps-content" class="text-sm text-gray-700 leading-relaxed space-y-3"></div>
+    </div>
+
+    <!-- Resources -->
+    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 mb-4">
+      <h3 class="font-bold text-blue-900 text-base mb-3">People in your situation often find this helpful next</h3>
+      <div id="resources-content" class="text-sm text-blue-900 leading-relaxed space-y-3"></div>
+    </div>
+
+    <!-- Voting rights -->
+    <div class="bg-green-50 border border-green-200 rounded-2xl p-5 mb-4 text-sm leading-relaxed">
+      <p class="font-bold text-green-900 mb-1">🗳️ Your voting rights</p>
+      <p class="text-green-800 mb-2">In Pennsylvania, you can vote if you are on parole, probation, or have been released from prison — even in a halfway house. The only time you cannot vote is while physically incarcerated for a felony.</p>
+      <a href="https://www.vote.pa.gov/Register-to-Vote/Pages/Voter-Registration-Applications.aspx" target="_blank" class="font-semibold underline text-green-700">Register to vote at vote.pa.gov →</a>
+    </div>
+
+    <!-- Employment rights -->
+    <div class="bg-white border border-gray-200 rounded-2xl p-5 mb-4 text-sm leading-relaxed">
+      <p class="font-bold text-gray-900 mb-2">💼 Know your employment rights</p>
+      <ul class="text-gray-700 space-y-2">
+        <li><strong>Statewide:</strong> Pennsylvania's Ban the Box law means public employers cannot ask about your record until later in the hiring process.</li>
+        <li><strong>Philadelphia:</strong> Employers cannot ask about your record until after a conditional job offer. As of January 2026, they can only look back 4 years for misdemeanors and 7 years for felonies.</li>
+        <li><a href="https://www.pubintlaw.org" target="_blank" class="underline font-medium text-blue-700">Learn your rights at pubintlaw.org →</a></li>
+      </ul>
+    </div>
+
+    <!-- Full disclaimer -->
+    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-xs text-amber-900 leading-relaxed">
+      <p class="font-bold mb-1">Important: This is general information, not legal advice.</p>
+      <p class="mb-1">This tool uses public court data that may be incomplete or have errors. Your situation may be more complicated than this tool can assess. Always talk to a free lawyer to confirm before taking any action.</p>
+      <p class="mb-1"><strong>Sealing your record does NOT restore your gun rights.</strong></p>
+      <p><strong>Sealed records are still visible to law enforcement.</strong></p>
+    </div>
+
+    <button class="big-btn big-btn-outline" onclick="startOver()">
+      Start a new check
+    </button>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: NOT FOUND
+       ============================================================ -->
+  <div id="screen-notfound" class="screen flex-col pt-10 fade-in">
+    <div class="text-center mb-6">
+      <div class="text-5xl mb-4">🔍</div>
+      <h2 class="text-2xl font-bold text-gray-900 mb-3">We couldn't find your record</h2>
+      <p class="text-gray-600 text-base leading-relaxed mb-6">
+        We didn't find any criminal court records in Pennsylvania under that name and date of birth. This could mean your record is already sealed, the name on your record is different, or there's a data issue with the court system.
+      </p>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-2xl p-5 mb-4 text-sm leading-relaxed space-y-3">
+      <p class="font-bold text-gray-900">Here's what you can do:</p>
+      <p>📋 <strong>Try MyCleanSlatePA.com</strong> — a free screener run by Community Legal Services of Philadelphia. They can also follow up by email within 24 hours.</p>
+      <p>⚖️ <strong>PALawHelp.org</strong> — find free legal aid anywhere in Pennsylvania who can check your record in person.</p>
+      <p>📞 <strong>PA 211</strong> — call or text 211 to be connected with local reentry, legal, and housing resources.</p>
+      <p>📄 <strong>PA State Police Access and Review form</strong> — you can request your own Pennsylvania criminal history directly from the state.</p>
+    </div>
+
+    <div class="bg-green-50 border border-green-200 rounded-2xl p-4 mb-6 text-sm text-green-800 leading-relaxed">
+      <p class="font-bold mb-1">🗳️ Remember: your voting rights</p>
+      <p>In Pennsylvania, you can vote if you are on parole, probation, or have been released from prison.</p>
+      <a href="https://www.vote.pa.gov/Register-to-Vote/Pages/Voter-Registration-Applications.aspx" target="_blank" class="underline font-semibold">Register at vote.pa.gov →</a>
+    </div>
+
+    <button class="big-btn big-btn-outline" onclick="startOver()">Try again with a different name</button>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: ERROR
+       ============================================================ -->
+  <div id="screen-error" class="screen flex-col pt-10 fade-in">
+    <div class="text-center mb-6">
+      <div class="text-5xl mb-4">⚠️</div>
+      <h2 class="text-2xl font-bold text-gray-900 mb-3">Something went wrong</h2>
+      <p id="error-message" class="text-gray-600 text-base leading-relaxed mb-4"></p>
+      <p class="text-gray-500 text-sm leading-relaxed">
+        Pennsylvania's court website sometimes goes down or is slow. Try again in a few minutes, or visit <a href="https://mycleanslatepa.com" target="_blank" class="underline text-blue-600">MyCleanSlatePA.com</a> for an alternative check.
+      </p>
+    </div>
+    <button class="big-btn big-btn-primary mt-6" onclick="startOver()">Try again</button>
+  </div>
+
+</div><!-- /app -->
+
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
+let state = {
+  firstName: '',
+  lastName: '',
+  dob: '',
+  selectedCandidate: null,  // {court_summary_url, ...}
+  restitution: null,
+  searchResults: null,
+};
+
+// ---------------------------------------------------------------------------
+// Screen navigation
+// ---------------------------------------------------------------------------
+function goTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById(screenId);
+  if (target) {
+    target.classList.add('active');
+    // Re-trigger animation
+    target.classList.remove('fade-in');
+    void target.offsetWidth;
+    target.classList.add('fade-in');
+    window.scrollTo(0, 0);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Input validation
+// ---------------------------------------------------------------------------
+function validateName(field) {
+  const input = document.getElementById(`input-${field}`);
+  const btn = document.getElementById(`btn-${field}`);
+  btn.disabled = input.value.trim().length < 1;
+}
+
+function validateDob() {
+  const input = document.getElementById('input-dob');
+  const btn = document.getElementById('btn-dob');
+  btn.disabled = !input.value;
+}
+
+function nextFromFirstName() {
+  const val = document.getElementById('input-firstname').value.trim();
+  if (!val) return;
+  state.firstName = val;
+  goTo('screen-lastname');
+  // focus the next input after a short delay
+  setTimeout(() => document.getElementById('input-lastname').focus(), 300);
+}
+
+function nextFromLastName() {
+  const val = document.getElementById('input-lastname').value.trim();
+  if (!val) return;
+  state.lastName = val;
+  goTo('screen-dob');
+  setTimeout(() => document.getElementById('input-dob').focus(), 300);
+}
+
+// ---------------------------------------------------------------------------
+// Step 1: Search
+// ---------------------------------------------------------------------------
+async function submitSearch() {
+  const dob = document.getElementById('input-dob').value;
+  if (!dob) return;
+  state.dob = dob;
+
+  goTo('screen-loading');
+
+  try {
+    const res = await fetch('/api/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name: state.firstName,
+        last_name: state.lastName,
+        date_of_birth: state.dob,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: 'Unknown error' }));
+      showError(err.detail || 'Could not reach court records.');
+      return;
+    }
+
+    const data = await res.json();
+    state.searchResults = data;
+
+    if (!data.found || data.candidates.length === 0) {
+      goTo('screen-notfound');
+      return;
+    }
+
+    if (data.candidates.length === 1) {
+      // Only one candidate — skip verification, go straight to restitution
+      state.selectedCandidate = data.candidates[0];
+      goTo('screen-restitution');
+    } else {
+      buildVerifyScreen(data.candidates);
+      goTo('screen-verify');
+    }
+  } catch (e) {
+    showError('Could not connect to the server. Check your internet connection and try again.');
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Step 1b: Verification screen (multiple candidates)
+// ---------------------------------------------------------------------------
+function buildVerifyScreen(candidates) {
+  const container = document.getElementById('candidates-list');
+  container.innerHTML = '';
+
+  candidates.forEach((c, idx) => {
+    const div = document.createElement('div');
+    div.className = 'bg-white border-2 border-gray-200 rounded-xl p-4 mb-3 cursor-pointer hover:border-blue-400 transition-all';
+    div.innerHTML = `
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="font-bold text-gray-900 text-lg">${escHtml(c.initials)}</div>
+          <div class="text-sm text-gray-500">Born: ${escHtml(String(c.birth_year))} &nbsp;·&nbsp; ${escHtml(c.county)} County</div>
+          <div class="text-sm text-gray-500">${c.case_count} case${c.case_count !== 1 ? 's' : ''} found</div>
+        </div>
+        <div class="text-2xl text-gray-300">→</div>
+      </div>
+    `;
+    div.onclick = () => {
+      state.selectedCandidate = c;
+      goTo('screen-restitution');
+    };
+    container.appendChild(div);
+  });
+
+  // Show the "none of these" option
+  document.getElementById('no-match-section').classList.remove('hidden');
+}
+
+function showNoMatch() {
+  goTo('screen-notfound');
+}
+
+// ---------------------------------------------------------------------------
+// Step 2: Restitution
+// ---------------------------------------------------------------------------
+function selectRestitution(val) {
+  state.restitution = val;
+  ['no', 'yes', 'unsure'].forEach(v => {
+    document.getElementById(`rest-${v}`).classList.toggle('selected', v === val);
+  });
+  document.getElementById('btn-restitution').disabled = false;
+}
+
+// ---------------------------------------------------------------------------
+// Step 3: Full check + results
+// ---------------------------------------------------------------------------
+async function submitCheck() {
+  if (!state.selectedCandidate || !state.restitution) return;
+
+  goTo('screen-loading2');
+
+  try {
+    const res = await fetch('/api/check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name: state.firstName,
+        last_name: state.lastName,
+        date_of_birth: state.dob,
+        court_summary_url: state.selectedCandidate.court_summary_url,
+        restitution: state.restitution,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: 'Unknown error' }));
+      showError(err.detail || 'Could not analyze your record.');
+      return;
+    }
+
+    const data = await res.json();
+
+    if (data.status === 'sealed') {
+      showSealedResult(data.message);
+      return;
+    }
+
+    buildResultsScreen(data);
+    goTo('screen-results');
+
+  } catch (e) {
+    showError('Could not connect to the server. Check your internet connection and try again.');
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Build results screen
+// ---------------------------------------------------------------------------
+function buildResultsScreen(data) {
+  buildOverallBanner(data);
+  buildCasesSection(data.cases);
+  buildNextSteps(data);
+  buildResources(data);
+
+  if (data.has_pending) {
+    document.getElementById('pending-warning').classList.remove('hidden');
+  } else {
+    document.getElementById('pending-warning').classList.add('hidden');
+  }
+}
+
+function buildOverallBanner(data) {
+  const meta = data.overall_meta;
+  const colorMap = {
+    green:  'bg-green-50 border border-green-300',
+    purple: 'bg-purple-50 border border-purple-300',
+    blue:   'bg-blue-50 border border-blue-300',
+    yellow: 'bg-yellow-50 border border-yellow-300',
+    gray:   'bg-gray-100 border border-gray-300',
+    teal:   'bg-teal-50 border border-teal-300',
+  };
+  const textMap = {
+    green:  'text-green-900',
+    purple: 'text-purple-900',
+    blue:   'text-blue-900',
+    yellow: 'text-yellow-900',
+    gray:   'text-gray-800',
+    teal:   'text-teal-900',
+  };
+  const iconBgMap = {
+    green:  'bg-green-500',
+    purple: 'bg-purple-600',
+    blue:   'bg-blue-600',
+    yellow: 'bg-yellow-500',
+    gray:   'bg-gray-500',
+    teal:   'bg-teal-600',
+  };
+
+  const banner = document.getElementById('overall-banner');
+  const color = meta.color || 'gray';
+  banner.className = `rounded-2xl p-5 mb-6 ${colorMap[color] || colorMap.gray}`;
+  banner.innerHTML = `
+    <div class="flex items-start gap-3">
+      <div class="w-10 h-10 rounded-full ${iconBgMap[color] || iconBgMap.gray} flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+        ${escHtml(meta.icon)}
+      </div>
+      <div>
+        <div class="${textMap[color] || textMap.gray} font-bold text-lg leading-tight mb-1">${escHtml(meta.headline)}</div>
+        <div class="${textMap[color] || textMap.gray} text-sm leading-relaxed">${escHtml(meta.detail)}</div>
+      </div>
+    </div>
+  `;
+}
+
+function buildCasesSection(cases) {
+  const container = document.getElementById('cases-container');
+  container.innerHTML = '';
+
+  if (!cases || cases.length === 0) {
+    container.innerHTML = '<p class="text-gray-500 text-sm">No criminal cases found in your record.</p>';
+    return;
+  }
+
+  cases.forEach(c => {
+    const caseDiv = document.createElement('div');
+    caseDiv.className = 'bg-white border border-gray-200 rounded-2xl mb-4 overflow-hidden';
+
+    const meta = c.meta;
+    const colorBorderMap = {
+      green: 'border-l-green-500', purple: 'border-l-purple-600',
+      blue: 'border-l-blue-600', yellow: 'border-l-yellow-500',
+      gray: 'border-l-gray-400', teal: 'border-l-teal-600',
+    };
+    const colorTextMap = {
+      green: 'text-green-700', purple: 'text-purple-700',
+      blue: 'text-blue-700', yellow: 'text-yellow-700',
+      gray: 'text-gray-600', teal: 'text-teal-700',
+    };
+    const color = meta.color || 'gray';
+    const caseId = `case-${c.docket_number.replace(/[^a-z0-9]/gi, '-')}`;
+
+    caseDiv.innerHTML = `
+      <div class="border-l-4 ${colorBorderMap[color] || colorBorderMap.gray} p-4">
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex-1 min-w-0">
+            <div class="${colorTextMap[color] || colorTextMap.gray} font-semibold text-sm mb-1">${escHtml(meta.label)}</div>
+            <div class="text-gray-900 font-medium text-sm leading-snug mb-1">${escHtml(c.case_summary)}</div>
+            <div class="text-gray-400 text-xs">${escHtml(c.docket_number)}${c.county ? ' · ' + escHtml(c.county) + ' County' : ''}</div>
+          </div>
+          <button onclick="toggleCharges('${caseId}')" class="text-xs text-blue-600 underline whitespace-nowrap flex-shrink-0 mt-1">
+            See charges
+          </button>
+        </div>
+      </div>
+      <div id="${caseId}-charges" class="hidden border-t border-gray-100">
+        ${buildChargesHTML(c.charges)}
+      </div>
+    `;
+
+    container.appendChild(caseDiv);
+  });
+}
+
+function buildChargesHTML(charges) {
+  if (!charges || charges.length === 0) {
+    return '<div class="p-4 text-sm text-gray-400">No charge details available.</div>';
+  }
+  return charges.map(ch => {
+    const meta = ch.meta;
+    const colorBg = {
+      green: 'bg-green-50', purple: 'bg-purple-50', blue: 'bg-blue-50',
+      yellow: 'bg-yellow-50', gray: 'bg-gray-50', teal: 'bg-teal-50',
+    };
+    const color = meta.color || 'gray';
+    return `
+      <div class="px-4 py-3 border-b border-gray-100 last:border-0 ${colorBg[color] || colorBg.gray}">
+        <div class="flex gap-2 items-start">
+          <span class="text-base flex-shrink-0">${escHtml(meta.icon)}</span>
+          <div class="flex-1 min-w-0">
+            <div class="font-medium text-gray-900 text-sm leading-snug">${escHtml(ch.charge_description)}</div>
+            ${ch.grade ? `<div class="text-xs text-gray-500 mt-0.5">Grade: ${escHtml(ch.grade)}${ch.disposition ? ' · ' + escHtml(ch.disposition) : ''}</div>` : ''}
+            <div class="text-xs text-gray-600 mt-1 leading-relaxed">${escHtml(ch.plain_language)}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleCharges(caseId) {
+  const el = document.getElementById(`${caseId}-charges`);
+  if (!el) return;
+  const isHidden = el.classList.contains('hidden');
+  el.classList.toggle('hidden', !isHidden);
+  // Update button text
+  const btn = el.previousElementSibling.querySelector('button');
+  if (btn) btn.textContent = isHidden ? 'Hide charges' : 'See charges';
+}
+
+function buildNextSteps(data) {
+  const container = document.getElementById('next-steps-content');
+  const v = data.overall_verdict;
+  const steps = [];
+
+  if (v === 'EXPUNGE') {
+    steps.push('✅ <strong>Talk to a free lawyer first.</strong> Expungement is the strongest outcome — your record could be fully erased. A lawyer can confirm and help you file.');
+    steps.push('📋 <strong>MyCleanSlatePA.com</strong> — free screener and follow-up from real lawyers (results by email, up to 24 hours).');
+  } else if (v === 'AUTO_SEAL') {
+    steps.push('✅ <strong>No action needed for automatic sealing</strong> — the court does this on its own. But it\'s worth confirming with a free lawyer that it has happened.');
+    steps.push('⚖️ If your record still shows up on a background check, a lawyer can help you figure out why and what to do.');
+  } else if (v === 'PETITION_SEAL') {
+    steps.push('📋 <strong>You need to file a petition</strong> with the Court of Common Pleas in the county where you were convicted. This is a legal process — a free lawyer can help you do it right.');
+    steps.push('⚖️ <strong>MyCleanSlatePA.com</strong> or <strong>PALawHelp.org</strong> can connect you with a lawyer who will help you file for free.');
+  } else if (v === 'UNCLEAR') {
+    steps.push('⚖️ <strong>Talk to a free lawyer.</strong> We couldn\'t determine eligibility from the data alone. This doesn\'t mean you can\'t seal your record — it means a lawyer needs to look.');
+    steps.push('📋 <strong>MyCleanSlatePA.com</strong> — free screener with follow-up from Community Legal Services lawyers.');
+  } else if (v === 'NOT_ELIGIBLE') {
+    steps.push('⚖️ <strong>Get a free legal review anyway.</strong> Laws change, and there may be options we didn\'t catch. A lawyer can also help with other rights restoration issues.');
+    steps.push('💼 <strong>Know your employment rights</strong> — even with a record, PA law limits what employers can ask about and when.');
+  }
+
+  if (data.has_pending) {
+    steps.unshift('⚠️ <strong>Resolve your open cases first.</strong> Pending charges block sealing. Once those cases close, check again.');
+  }
+
+  container.innerHTML = steps.map(s => `<p>${s}</p>`).join('');
+}
+
+function buildResources(data) {
+  const container = document.getElementById('resources-content');
+  const v = data.overall_verdict;
+
+  let html = '';
+
+  // Primary resource based on verdict
+  if (v === 'PETITION_SEAL' || v === 'EXPUNGE' || v === 'UNCLEAR') {
+    html += `
+      <p>🏛️ <strong><a href="https://mycleanslatepa.com" target="_blank" class="underline">MyCleanSlatePA.com</a></strong> — free screener run by Community Legal Services of Philadelphia. They follow up by email within 24 hours and can connect you with a lawyer who will help you file for free.</p>
+      <p>⚖️ <strong><a href="https://palawhelp.org" target="_blank" class="underline">PALawHelp.org</a></strong> — find free legal aid anywhere in Pennsylvania.</p>
+    `;
+  } else {
+    html += `
+      <p>⚖️ <strong><a href="https://palawhelp.org" target="_blank" class="underline">PALawHelp.org</a></strong> — find free legal aid anywhere in Pennsylvania.</p>
+    `;
+  }
+
+  // PA 211 always
+  html += `<p>📞 <strong>PA 211</strong> — call or text <strong>211</strong> for local reentry, housing, and legal resources anywhere in Pennsylvania.</p>`;
+
+  // Reentry services if charges are recent
+  html += `
+    <p>🏠 <strong>Philadelphia Office of Reentry Partnerships:</strong> (215) 683-3370, walk-in Mon–Fri 9:30am–4:30pm. For other counties: <a href="https://pa211.org" target="_blank" class="underline">PA211.org</a>.</p>
+  `;
+
+  container.innerHTML = html;
+}
+
+function showSealedResult(message) {
+  // Build a simple "already sealed" results view
+  const banner = document.getElementById('overall-banner');
+  banner.className = 'rounded-2xl p-5 mb-6 bg-teal-50 border border-teal-300';
+  banner.innerHTML = `
+    <div class="flex items-start gap-3">
+      <div class="w-10 h-10 rounded-full bg-teal-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">🔒</div>
+      <div>
+        <div class="text-teal-900 font-bold text-lg leading-tight mb-1">Your record may already be sealed</div>
+        <div class="text-teal-800 text-sm leading-relaxed">${escHtml(message)}</div>
+      </div>
+    </div>
+  `;
+  document.getElementById('cases-container').innerHTML = '';
+  document.getElementById('pending-warning').classList.add('hidden');
+  document.getElementById('next-steps-content').innerHTML = '<p>✅ If your record is already sealed, that\'s great news! Confirm with a free lawyer at <a href="https://mycleanslatepa.com" target="_blank" class="underline text-blue-600">MyCleanSlatePA.com</a> or <a href="https://palawhelp.org" target="_blank" class="underline text-blue-600">PALawHelp.org</a>.</p>';
+  document.getElementById('resources-content').innerHTML = '<p>⚖️ <strong><a href="https://palawhelp.org" target="_blank" class="underline">PALawHelp.org</a></strong> — find free legal aid to confirm your record status.</p><p>📞 <strong>PA 211</strong> — call or text 211 for local resources.</p>';
+  goTo('screen-results');
+}
+
+// ---------------------------------------------------------------------------
+// Error / utility
+// ---------------------------------------------------------------------------
+function showError(message) {
+  document.getElementById('error-message').textContent = message;
+  goTo('screen-error');
+}
+
+function startOver() {
+  state = { firstName: '', lastName: '', dob: '', selectedCandidate: null, restitution: null, searchResults: null };
+  document.getElementById('input-firstname').value = '';
+  document.getElementById('input-lastname').value = '';
+  document.getElementById('input-dob').value = '';
+  document.getElementById('btn-firstname').disabled = true;
+  document.getElementById('btn-lastname').disabled = true;
+  document.getElementById('btn-dob').disabled = true;
+  document.getElementById('btn-restitution').disabled = true;
+  ['no','yes','unsure'].forEach(v => document.getElementById(`rest-${v}`).classList.remove('selected'));
+  goTo('screen-welcome');
+}
+
+function escHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+</script>
+
+</body>
+</html>

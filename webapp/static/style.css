@@ -1,0 +1,24 @@
+/* Clean Slate PA — supplemental styles */
+/* Most styling is Tailwind utility classes in the template. */
+/* This file holds only what Tailwind can't express. */
+
+/* Smooth page transitions */
+html { scroll-behavior: smooth; }
+
+/* Prevent text size inflation on iOS landscape */
+html { -webkit-text-size-adjust: 100%; }
+
+/* Better tap targets on mobile */
+button, a { touch-action: manipulation; }
+
+/* Radio option focus ring for accessibility */
+.radio-option:focus-visible {
+  outline: 2px solid #0284c7;
+  outline-offset: 2px;
+}
+
+/* Input focus ring */
+input:focus-visible {
+  outline: 2px solid #0284c7;
+  outline-offset: 0;
+}
