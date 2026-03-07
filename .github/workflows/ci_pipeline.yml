@@ -34,7 +34,6 @@ jobs:
         run: uv run ruff check
 
       - name: Run tests and generate coverage report
-        run: uv run pytest -rpPfE
-
-      - name: Generate coverage report
-        run: uv run coverage report -m -i
+        run: |
+          uv run coverage run -m pytest -rpPfE
+          uv run coverage report -m -i
