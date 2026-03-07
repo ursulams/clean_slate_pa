@@ -50,7 +50,7 @@ jobs:
           current_version=$(uv version --short)
 
           # Bump version
-          uv version --bump "${{ inputs.bump-type }}" --frozen
+          uv version --bump "${{ inputs.bump-type }}" --no-sync
 
           # Get new version
           new_version=$(uv version --short)

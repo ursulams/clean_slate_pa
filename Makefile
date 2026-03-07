@@ -8,5 +8,5 @@ format:
 	uv run docformatter -i -r .
 
 test:
-	uv run coverage run -m pytest -rpPfE
+	uv run pytest -rpPfE
 	uv run coverage report -m -i
