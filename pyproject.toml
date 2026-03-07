@@ -6,7 +6,7 @@ authors = [
     {name = "Tyler Richardett", email = "tyler@freeourvote.org"},
 ]
 readme = "README.md"
-requires-python = ">=3.11,<3.15"
+requires-python = ">=3.11,<3.14"
 dependencies = [
     "httpx>=0.28.1",
     "justhtml>=1.7.0",
