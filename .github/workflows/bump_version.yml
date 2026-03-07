@@ -38,7 +38,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.x"
+          python-version: "3.11"
 
       - name: Install UV
         run: pip install uv
@@ -50,7 +50,7 @@ jobs:
           current_version=$(uv version --short)
 
           # Bump version
-          uv version --bump "${{ inputs.bump-type }}" --no-sync
+          uv version --bump "${{ inputs.bump-type }}"
 
           # Get new version
           new_version=$(uv version --short)
