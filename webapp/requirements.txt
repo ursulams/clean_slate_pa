@@ -2,4 +2,4 @@ fastapi>=0.115.0
 uvicorn[standard]>=0.34.0
 jinja2>=3.1.0
 python-multipart>=0.0.20
-git+https://github.com/Free-Our-Vote/pa-record-retriever.git
+git+https://github.com/ursulams/pa-record-retriever.git
